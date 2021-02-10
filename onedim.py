@@ -105,6 +105,11 @@ def plot_solutions(T_f, X_0s, dxdt, simulation_functions, colors=['k'], dt=DT, x
     plot_1D_phase_space(dxdt, xlim=xlim, x_label=x_label, ax=ax)
     
     X_solutions = []
+    try:
+        iter(simulation_functions)
+    except TypeError:
+        simulation_functions = [simulation_functions]
+    
     for simulation_function, X_0 in product(simulation_functions, X_0s):
         T, X_solution = simulate(X_0, T_f, dxdt, simulation_function, dt=dt)
         X_solutions.append(X_solution)
