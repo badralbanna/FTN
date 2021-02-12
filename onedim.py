@@ -52,8 +52,12 @@ def plot_1D_phase_space(dXdT, xlim=(X_MIN, X_MAX), x_label=X_LABEL, res_c=0.001,
         fig, ax = plt.subplots()
     ax.spines['bottom'].set_position(('data',0))
     ax.spines['left'].set_position(('data',0))
-    ax.set_xlabel(x_label, loc="right")
-    ax.set_ylabel(f"d({x_label})/dT", loc="top")
+    # For Matplotlib 3.3 
+    #ax.set_xlabel(x_label, loc="right")
+    #ax.set_ylabel(f"d({x_label})/dT", loc="top")
+    # For Matplotlib 3.1
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(f"d({x_label})/dT")
     
     # Plotting derivative
     X = np.arange(xlim[0], xlim[1], res_c)
