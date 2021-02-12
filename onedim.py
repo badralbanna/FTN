@@ -52,16 +52,20 @@ def plot_1D_phase_space(dXdT, xlim=(X_MIN, X_MAX), x_label=X_LABEL, res_c=0.001,
         fig, ax = plt.subplots()
     ax.spines['bottom'].set_position(('data',0))
     ax.spines['left'].set_position(('data',0))
-    # For Matplotlib 3.3 
-    #ax.set_xlabel(x_label, loc="right")
-    #ax.set_ylabel(f"d({x_label})/dT", loc="top")
-    # For Matplotlib 3.1
-    ax.set_xlabel(x_label)
-    ax.set_ylabel(f"d({x_label})/dT")
+
     
     # Plotting derivative
     X = np.arange(xlim[0], xlim[1], res_c)
+    Y = dXdT(X)
     ax.plot(X, dXdT(X), color='blue')
+
+    # Setting labels and moving them
+    #ax.set_xlabel(x_label)
+    #ax.set_ylabel(f"d({x_label})/dT")
+    X_max = np.max(X)
+    Y_max = np.max(Y)
+    ax.text(X_max, 0, x_label, va="bottom", ha="right")
+    ax.text(0, Y_max, f"d({x_label})/dT", rotation="vertical", ha="left", va="top")
     
     # Finding critical points
     X_c = find_1D_critical_points(dXdT,  xlim=xlim, res_c=res_c, epsilon=epsilon)
@@ -87,7 +91,7 @@ def find_next_point_midpoint(x, dxdt, dt=DT):
 
 def simulate(x_0, t_f, dxdt, simulation_function, dt=DT):
     X_solution = [x_0]
-    T = np.arange(dt, t_f, dt)
+    T = np.arange(0, t_f + dt, dt)
     for t in T[1:]:
         x_previous = X_solution[-1]
         x_next = simulation_function(x_previous, dxdt, dt=dt)
@@ -127,5 +131,5 @@ def plot_solutions(T_f, X_0s, dxdt, simulation_functions, colors=['k'], dt=DT, x
         ax_t.plot(T, X_solution, color=color)
         ax_t.scatter(T[0], X_solution[0], color=color, zorder=10, s=10.0)
         ax_t.set_ylabel(x_label)
-        ax_t.set_xlabel("Time", loc="right")
+        ax_t.set_xlabel("Time")
         ax_t.set_ylim(xlim)
