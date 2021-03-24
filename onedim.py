@@ -5,6 +5,27 @@ from scipy.misc import derivative
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
+# Setting plotting defaults
+
+# Make legend text small
+plt.rcParams['legend.fontsize'] = 'small' 
+# Shrink axes labels a bit 
+plt.rcParams['axes.labelsize'] = 'medium'
+plt.rcParams['xtick.labelsize'] = 'small'
+plt.rcParams['ytick.labelsize'] = 'small'
+# Set limits on when scientific notation is used
+plt.rcParams['axes.formatter.limits'] = [-2, 3] 
+# Use LaTeX to format axes labels and numbers
+plt.rcParams['axes.formatter.use_mathtext'] = True
+# Get rid of spines on top and bottom
+plt.rcParams['axes.spines.top'] = False
+plt.rcParams['axes.spines.right'] = False
+# Ticks point in  
+plt.rcParams['xtick.direction'] = 'in'
+plt.rcParams['ytick.direction'] = 'in'
+# Change DPI of figure images
+plt.rcParams['figure.dpi'] = 150
+
 X_MIN = -5
 X_MAX = 5
 X_LABEL = "Voltage"
@@ -79,17 +100,18 @@ def plot_1D_phase_space(dXdT, xlim=(X_MIN, X_MAX), x_label=X_LABEL, res_c=0.001,
     ax.set_xlim(xlim)
     
 # Functions implimenting Euler's method
-def find_next_point_Euler(x, dxdt, dt=DT):
+def find_next_point_Euler_1D(x, dxdt, dt=DT):
     x_next = x + dxdt(x)*dt
     return(x_next)
 
 # Function implimenting the midpoint method aka RK2
-def find_next_point_midpoint(x, dxdt, dt=DT):
+def find_next_point_midpoint_1D(x, dxdt, dt=DT):
     x_test = x + dxdt(x)*dt
     x_next = x + dxdt((x + x_test)/2.)*dt
     return(x_next)
 
-def simulate(x_0, t_f, dxdt, simulation_function, dt=DT):
+# Simulation functions
+def simulate_1D(x_0, t_f, dxdt, simulation_function, dt=DT):
     X_solution = [x_0]
     T = np.arange(0, t_f + dt, dt)
     for t in T[1:]:
@@ -98,17 +120,18 @@ def simulate(x_0, t_f, dxdt, simulation_function, dt=DT):
         X_solution.append(x_next)
     return (T, X_solution)
 
-def simulate_collection(X_0s, t_f, dxdt, simulation_function, dt=DT):
+def simulate_1D_collection(X_0s, t_f, dxdt, simulation_function, dt=DT):
     X = []
     for X_0, in X_0s:
-        T, X_sol = simulate(X_0, t_f, dxdt, simulation_function, dt=dt)
+        T, X_sol = simulate_1D(X_0, t_f, dxdt, simulation_function, dt=dt)
         X.append(X_sol)
     return T, X
 
 # Function to plot phase space diagram w/ critical points 
+
 from itertools import product
 
-def plot_solutions(T_f, X_0s, dxdt, simulation_functions, colors=['k'], dt=DT, xlim=(X_MIN, X_MAX), x_label=X_LABEL):
+def plot_1D_solutions(T_f, X_0s, dxdt, simulation_functions, colors=['k'], dt=DT, xlim=(X_MIN, X_MAX), x_label=X_LABEL):
     fig, (ax, ax_t) = plt.subplots(ncols=2, figsize=(9, 4))
     plot_1D_phase_space(dxdt, xlim=xlim, x_label=x_label, ax=ax)
     
@@ -117,9 +140,9 @@ def plot_solutions(T_f, X_0s, dxdt, simulation_functions, colors=['k'], dt=DT, x
         iter(simulation_functions)
     except TypeError:
         simulation_functions = [simulation_functions]
-    
+        
     for simulation_function, X_0 in product(simulation_functions, X_0s):
-        T, X_solution = simulate(X_0, T_f, dxdt, simulation_function, dt=dt)
+        T, X_solution = simulate_1D(X_0, T_f, dxdt, simulation_function, dt=dt)
         X_solutions.append(X_solution)
 
     if len(colors) != len(X_solutions):
