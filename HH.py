@@ -167,8 +167,3 @@ def plot_HH_dynamics(V, n, m, h, T):
     ax_c2.set_ylabel("$\\mathrm{mS}/\\mathrm{mm}^2$")
 
     ax_c2.set_xlabel("Time (ms)")
-    
-from scipy.signal import find_peaks
-
-def AP_times(V, T, dt=DT):
-    return(T[find_peaks(V, height=0, width=int(1./dt))[0]])
