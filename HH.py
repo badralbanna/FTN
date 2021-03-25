@@ -65,7 +65,7 @@ eNa = 50
 
 # Membrane voltage dynamics
 
-def dVdt(V, n, m, h, t):
+def dVdt(V, n, m, h, t, i=lambda t: 0):
     i_m = gL*(V-eL) + gK*(n**4)*(V-eK) + gNa*(m**3)*h*(V-eNa) 
     return((-i_m + i(t)) / c)
 
@@ -139,6 +139,11 @@ def h_tau(V):
 def dSdt_HH(V, n, m, h, t):
     return(np.array([dVdt(V, n, m, h, t), dndt(V, n), dmdt(V, m), dhdt(V, h), 1.]))
 
+def make_dSdt_HH(i):
+    def dSdt_HH(V, n, m, h, t):
+        return(np.array([dVdt(V, n, m, h, t, i=i), dndt(V, n), dmdt(V, m), dhdt(V, h), 1.]))
+    return dSdt_HH
+
 # A function to plot 
 def plot_HH_dynamics(V, n, m, h, T):
     fig, (ax_i, ax_v, ax_c, ax_c2) = plt.subplots(nrows=4, sharex=True)
@@ -167,8 +172,3 @@ def plot_HH_dynamics(V, n, m, h, T):
     ax_c2.set_ylabel("$\\mathrm{mS}/\\mathrm{mm}^2$")
 
     ax_c2.set_xlabel("Time (ms)")
-    
-from scipy.signal import find_peaks
-
-def AP_times(V, T, dt=DT):
-    return(T[find_peaks(V, height=0, width=int(1./dt))[0]])

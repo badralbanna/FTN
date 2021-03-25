@@ -48,6 +48,12 @@ def simulate_nD(s_0, t_f, dsdt, simulation_function=find_next_point_midpoint_nD,
     S_solution = np.array(S_solution)
     return(S_solution)
 
+# Function to find peaks
+from scipy.signal import find_peaks
+
+def AP_times(V, T, dt=DT):
+    return(T[find_peaks(V, height=0, width=int(1./dt))[0]])
+
 # Functions specific to 2D systems (can depend on time)
 
 ## Function to find the critical points, (do not change)
