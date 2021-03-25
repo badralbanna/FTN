@@ -2,7 +2,9 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from scipy.optimize import fsolve, root
+from scipy.linalg import eig
 from itertools import product
+from matplotlib import cm
 from copy import copy, deepcopy
 
 # Setting plotting defaults
@@ -142,26 +144,28 @@ def plot_2D_phase_space(dxdt, dydt, t=0, xlim=(-3, 3), ylim=(-3, 3), res=0.1, q_
     ax.set_ylabel(y_label)
     return(ax)
     
-def plot_2D_solutions(T_f, X_0s, Y_0s, dxdt, dydt, simulation_functions, colors=['.k'], dt=DT, xlim=(-3, 3), ylim=(-3, 3), res=0.1, q_scale=1.0, x_label="x", y_label="y", figsize=(9,3)):
-    fig, (ax, ax_x, ax_y) = plt.subplots(figsize=figsize, ncols=3)
+def plot_2D_solutions(T_f, X_0s, Y_0s, dxdt, dydt, simulation_function=find_next_point_midpoint_nD, colormap=cm.cool, dt=DT, xlim=(-3, 3), ylim=(-3, 3), res=0.1, q_scale=1.0, x_label="x", y_label="y", figsize=(9,3), ax_set=None):
+    if ax_set is None:
+        fig, (ax, ax_x, ax_y) = plt.subplots(figsize=figsize, ncols=3)
+    else:
+        ax, ax_x, ax_y = ax_set
     
     plot_2D_phase_space(dxdt, dydt, xlim=xlim, ylim=ylim, res=res, q_scale=q_scale, x_label=x_label, y_label=y_label, ax=ax)
     ax.set_aspect(aspect='equal')
     
     # Wrapping dynamics into one function
     def dSdt(x, y, t):
-        return(np.array([dxdt(x,y, t), dydt(x, y, t), 1.]))
+        return(np.array([dxdt(x, y, t), dydt(x, y, t), 1.]))
     
     X_solutions = []
     Y_solutions = []
-    for simulation_function, (X_0, Y_0) in product(simulation_functions, zip(X_0s, Y_0s)):
+    for (X_0, Y_0) in zip(X_0s, Y_0s):
         S = simulate_nD((X_0, Y_0, 0.), T_f, dSdt, simulation_function, dt=dt)
         X_solutions.append(S[:,0])
         Y_solutions.append(S[:,1])
         T = S[:,2]
         
-    if len(colors) != len(X_solutions):
-        colors = len(X_solutions) * colors
+    colors = [colormap(i / float(len(X_0s))) for i in range(len(X_0s))]
 
     for X_solution, Y_solution, color in zip(X_solutions, Y_solutions, colors):
         ax.plot(X_solution, Y_solution, color=color)
