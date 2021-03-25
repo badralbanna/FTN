@@ -1,3 +1,8 @@
+import numpy as np
+from scipy.linalg import eig
+import matplotlib.pyplot as plt
+from matplotlib import cm
+
 # Creating a set of vectors arranged on a circle to vizualize
 R = 1.0 # radius the points will sit at. 
 N_POINTS = 60 # the number of points to draw
@@ -10,9 +15,6 @@ V = np.array([(R*np.cos(i), R*np.sin(i)) for i in theta]).T
 # Picking some pretty colors to use for the points
 hsv = cm.get_cmap('hsv', N_POINTS)
 colors = list(hsv(range(N_POINTS)))
-
-fig, ax = plt.subplots(figsize=(3,3))
-ax.set_aspect('equal')
 
 # Defining some functions to plot the points and special points in the transformation
 

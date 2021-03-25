@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from numpy.random import randn 
 
 ## Possible currents
-def make_static_i(t, i_0=0):
+def make_static_i(i_0=0):
     def i_e(t):
         return(i_0) 
     return(i_e) 
